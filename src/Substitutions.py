@@ -4,14 +4,14 @@ import re
 def _all():
     temp = []
     temp.extend(STANDS)
-    temp.extend(STAND)
+    # temp.extend(STAND)
     temp.extend(NICU)
-    temp.extend(IM_X)
+    # temp.extend(IM_X)
     temp.extend(SHOOT_ME)
     temp.extend(KILL_ME)
     temp.extend(STAB_ME)
     temp.extend(NULLPO)
-    temp.extend(CYANIDE)
+    # temp.extend(CYANIDE)
     temp.extend(THANKS_BOT)
     temp.extend(BAD_BOT)
     return temp
@@ -109,7 +109,7 @@ STANDS = [
         lambda x: re.sub("Oasis", "「O a s i s」", x, flags=re.IGNORECASE | re.MULTILINE),
         lambda x: re.sub("Rolling Stones", "「R o l l i n g   S t o n e s」", x, flags=re.IGNORECASE | re.MULTILINE),
         lambda x: re.sub("Stone Free", "「S t o n e   F r e e」", x, flags=re.IGNORECASE | re.MULTILINE),
-        lambda x: re.sub("Kiss", "「K i s s」", x, flags=re.IGNORECASE | re.MULTILINE),
+#       lambda x: re.sub("Kiss", "「K i s s」", x, flags=re.IGNORECASE | re.MULTILINE),
         lambda x: re.sub("Burning Down the House", "「B u r n i n g   D o w n   t h e   H o u s e」", x,
                          flags=re.IGNORECASE | re.MULTILINE),
         lambda x: re.sub("Foo Fighters", "「F o o   F i g h t e r s」", x, flags=re.IGNORECASE | re.MULTILINE),
@@ -196,7 +196,7 @@ BEGINNING_B = [
         lambda x: re.sub("^b", "🅱", x, flags=re.IGNORECASE | re.MULTILINE),
         lambda x: re.sub(" b", " 🅱", x, flags=re.IGNORECASE | re.MULTILINE)
     ]
-IM_X = [lambda x: re.sub("^.*( |^)i['‘ʼ’]?m (.+)", r"Hi \2, I'm dad!", x, flags=re.I | re.MULTILINE)]
+IM_X = [lambda x: re.sub("^( |^)(i['‘ʼ’]?m |i am )(.+)", r"Hi \3, I'm dad!", x, flags=re.I | re.MULTILINE)]
 SHOOT_ME = [lambda x: re.sub("^.*shoot me.*", ":gun:", x, flags=re.I | re.M)]
 KILL_ME = [lambda x: re.sub("^.*kill me.*", ":gun:", x, flags=re.I | re.M)]
 STAB_ME = [lambda x: re.sub("^.*stab me.*", ":dagger:", x, flags=re.I | re.M)]
@@ -208,3 +208,4 @@ THANKS_BOT = [lambda x: re.sub("^.*thanks bot.*", "<:thumb:595365230666711056>",
               lambda x: re.sub("^.*good bot.*", "<:thumb:595365230666711056>", x, flags=re.I | re.M)]
 BAD_BOT = [lambda x: re.sub("^.*stupid bot.*", "<:aqua:586301642597728263>", x, flags=re.I | re.M),
            lambda x: re.sub("^.*bad bot.*", "<:aqua:586301642597728263>", x, flags=re.I | re.M)]
+NULLPO = [lambda x: re.sub("^sleb", "sleep pls", x, flags=re.I | re.M)]

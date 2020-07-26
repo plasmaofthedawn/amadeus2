@@ -445,6 +445,10 @@ async def all_quotes(message, bot):
     await bot.send("Quotes",  message.channel, file=QUOTES_PATH, filename="quotes.txt")
 
 
+async def chame(message, bot):
+    await bot.send("is gae", message.channel)
+
+
 def first_wikipedia(message, bot):
     search_query = " ".join(message.content.split(" ")[1:])
 
@@ -498,6 +502,7 @@ command_list = {
     'addquote': add_quote,
     'quote': get_quote,
     'quotes': all_quotes,
+    'chame': chame
 }
 
 default_command = unknown_command
