@@ -1,21 +1,97 @@
+import random
 import re
+
+from src.Client import Client
+import discord
+
+
+class Reaction:
+
+    def __init__(self, regex, replacement=None, react_id=None, flags=re.I | re.MULTILINE, chance=1, user_id=None):
+        self.regex = regex
+        self.flags = flags
+
+        ways = sum([replacement is not None, react_id is not None])
+
+        if ways == 0:
+            raise AttributeError("Need to specify a reaction")
+        elif ways > 1:
+            raise AttributeError("Specified more than one reaction")
+
+        if replacement is not None:
+            self.reaction = "regex"
+        elif react_id is not None:
+            self.reaction = "reaction"
+
+        self.replacement = replacement
+        self.react_id = react_id
+
+        self.chance = chance
+        self.user_id = user_id
+
+    def apply_regex(self, message):
+        return re.sub(self.regex, self.replacement, message, flags=self.flags)
+
+    def matches_regex(self, message):
+        return re.match(self.regex, message, self.flags)
+
+    def apply(self, message: discord.Message):
+        if self.user_id is None or message.author.id == self.user_id:
+            if random.random() < self.chance and self.matches_regex(message):
+                if self.replacement == "regex":
+                    original_message = message
+
+                    message = self.apply_regex(message.content)
+                    changed = original_message.content == message
+
+                    if changed:
+                        return SendAction(message, original_message.channel)
+                    return
+                elif self.replacement == "reaction":
+                    return ReactAction(message, self.react_id)
+
+        return
+
+
+class Action:
+    def apply(self, bot: Client):
+        raise NotImplementedError
+
+
+class SendAction(Action):
+    def __init__(self, message, channel):
+        self.message = message
+        self.channel = channel
+
+    def apply(self, bot):
+        bot.send(self.message, self.channel)
+
+
+class ReactAction(Action):
+    def __init__(self, message, emoji_id):
+        self.message = message
+        self.emoji_id = emoji_id
+
+    def apply(self, bot):
+        self.message.react(bot.get_emoji(self.emoji_id))
 
 
 def _all():
     temp = []
     temp.extend(STANDS)
-    # temp.extend(STAND)
+    temp.extend(STAND)
     temp.extend(NICU)
-    # temp.extend(IM_X)
+    temp.extend(IM_X)
     temp.extend(SHOOT_ME)
     temp.extend(KILL_ME)
     temp.extend(STAB_ME)
     temp.extend(NULLPO)
-    # temp.extend(CYANIDE)
+    temp.extend(CYANIDE)
     temp.extend(THANKS_BOT)
     temp.extend(BAD_BOT)
     return temp
 
+# TODO: make action used.
 
 STANDS = [
         lambda x: re.sub("Star Platinum", "「S t a r   P l a t i n u m」", x, flags=re.IGNORECASE | re.MULTILINE),
@@ -191,12 +267,12 @@ STANDS = [
         lambda x: re.sub("Awaking III Leave", "「A w a k i n g   I I I   L e a v e」", x,
                          flags=re.IGNORECASE | re.MULTILINE),
 
-    ]
+]
 BEGINNING_B = [
-        lambda x: re.sub("^b", "🅱", x, flags=re.IGNORECASE | re.MULTILINE),
-        lambda x: re.sub(" b", " 🅱", x, flags=re.IGNORECASE | re.MULTILINE)
-    ]
-IM_X = [lambda x: re.sub("^( |^)(i['‘ʼ’]?m |i am )(.+)", r"Hi \3, I'm dad!", x, flags=re.I | re.MULTILINE)]
+    lambda x: re.sub("^b", "🅱", x, flags=re.IGNORECASE | re.MULTILINE),
+    lambda x: re.sub(" b", " 🅱", x, flags=re.IGNORECASE | re.MULTILINE)
+]
+IM_X = [lambda x: re.sub("^.*( |^)i['‘ʼ’]?m (.+)", r"Hi \2, I'm dad!", x, flags=re.I | re.MULTILINE)]
 SHOOT_ME = [lambda x: re.sub("^.*shoot me.*", ":gun:", x, flags=re.I | re.M)]
 KILL_ME = [lambda x: re.sub("^.*kill me.*", ":gun:", x, flags=re.I | re.M)]
 STAB_ME = [lambda x: re.sub("^.*stab me.*", ":dagger:", x, flags=re.I | re.M)]
